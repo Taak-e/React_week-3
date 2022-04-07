@@ -1,27 +1,40 @@
+// PostList.js
 import React from "react";
+
 import Post from "../components/Post";
+import {useSelector, useDispatch} from "react-redux";
+import {actionCreators as postActions} from "../redux/modules/post";
+
 
 const PostList = (props) => {
+    const dispatch = useDispatch();
+    const post_list = useSelector((state) => state.post.list);
+    const user_info = useSelector((state) => state.user.user);
+
     
+    console.log(post_list);
+    console.log(user_info);
+
+    React.useEffect(() => {
+        console.log('in list');
+
+        dispatch(postActions.getPostFB());
+
+    }, []);
+
     return (
         <React.Fragment>
-           <Post />
+            {post_list.map((p, idx) => {
+
+                console.log(p);
+                
+                if(user_info && p.user_info.user_id === user_info.uid){
+                    return <Post key={p.id} {...p} is_me/>
+                }
+                return <Post key={p.id} {...p} />
+            })}
         </React.Fragment>
     )
 }
-
-// props 로 정보를 받아오는데 부모가 정보를 주지 않았을때 오류나 화면이 다 깨지거나
-// 그럴 때 기본적으로 필요한 props들을 미리 넘겨 놓는 방식(최소 props 정보가 없어서 생기는 오류 방지)
-
-Post.defaultProps ={
-    user_info: {
-        user_name: "taak_e",
-        user_porfile: "https://taakeimages.s3.ap-northeast-2.amazonaws.com/eggtart.jpg"
-    },
-    image_url: "https://taakeimages.s3.ap-northeast-2.amazonaws.com/eggtart.jpg",
-    contents: "에그타르트 맛집!",
-    comment_cnt: 10,
-    insert_dt: "2022-04-08 10:00:00",
-};
 
 export default PostList;
